@@ -625,7 +625,7 @@ portu</string>
     <item row="2" column="3">
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Wer. 0.9</string>
+       <string>Wer. 0.9.2</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

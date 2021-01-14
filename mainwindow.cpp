@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->pushButtonDisconnect_1, &QPushButton::clicked, this, &MainWindow::deviceDisconnect);
     connect(ui->pushButtonRefresh_1, &QPushButton::clicked, this, &MainWindow::showAvailableDevices);
 
+    connect(this, &MainWindow::sendMessageBoxInformation, this, &MainWindow::showMessageBoxInformation);
+    connect(this, &MainWindow::sendStatusBarInformation, this, &MainWindow::showStatusBarInformation);
+
     logThread();
 }
 
@@ -84,6 +87,7 @@ void MainWindow::serialReadWrite(QByteArray data) {
     timeRead = QDateTime::currentDateTime();
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
     emit sendReadedData(timeRead.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), response);
+    emit sendTimeDifference(timeWrite.msecsTo(timeRead));
 }
 
 void MainWindow::socketConnect() {
@@ -119,6 +123,7 @@ void MainWindow::socketReadWrite(QByteArray data) {
     timeRead = QDateTime::currentDateTime();
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
     emit sendReadedData(timeRead.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), response);
+    emit sendTimeDifference(timeWrite.msecsTo(timeRead));
 }
 
 void MainWindow::showAvailableDevices() {
@@ -140,6 +145,7 @@ void MainWindow::prepareDataMonitorWindow() {
     dataMonitor = new DataMonitor();
     connect(this, &MainWindow::sendReadedData, dataMonitor, &DataMonitor::getReadedData, Qt::DirectConnection);
     connect(this, &MainWindow::sendWritedData, dataMonitor, &DataMonitor::getSendedData, Qt::DirectConnection);
+    connect(this, &MainWindow::sendTimeDifference, dataMonitor, &DataMonitor::getTimeDiff, Qt::DirectConnection);
     connect(dataMonitor, &DataMonitor::hideMonitor, dataMonitor, &DataMonitor::hide);
     connect(dataMonitor, &DataMonitor::hideMonitor, this, &MainWindow::changeDataMonitorWindowStatus);
     connect(this, &MainWindow::finished, dataMonitor, &DataMonitor::deleteLater);
@@ -159,6 +165,8 @@ void MainWindow::changeDataMonitorWindowStatus() {
 void MainWindow::prepareTesterWindow() {
     testerMonitor = new TesterWindow(nullptr, connectionStatus);
     connect(testerMonitor, &TesterWindow::sendSequenceToDevice, this, &MainWindow::deviceReadWrite, Qt::DirectConnection);
+    connect(testerMonitor, &TesterWindow::sendMessageBoxInformation, this, &MainWindow::showMessageBoxInformation, Qt::DirectConnection);
+    connect(this, &MainWindow::sendConnectionStatusDevice, testerMonitor, &TesterWindow::getConnectionStatus, Qt::DirectConnection);
     connect(testerMonitor, &TesterWindow::hideMonitor, testerMonitor, &TesterWindow::hide);
     connect(testerMonitor, &TesterWindow::hideMonitor, this, &MainWindow::changeTesterWindowStatus);
     connect(this, &MainWindow::finished, testerMonitor, &TesterWindow::deleteLater);
@@ -180,11 +188,14 @@ void MainWindow::logThread() {
     LogData *logData;
 
     loggingThread = new QThread(this);
-    logData = new LogData(nullptr, QDateTime::currentDateTime().toString("Log_yyyy_MM_dd_HH_mm_ss_zzz") + ".txt");
+    logData = new LogData(nullptr, QDateTime::currentDateTime().toString("Log/Log_yyyy_MM_dd_HH_mm_ss_zzz") + ".txt");
 
     connect(this, &MainWindow::sendWritedData, logData, &LogData::appendLogFile);
     connect(this, &MainWindow::sendReadedData, logData, &LogData::appendLogFile);
     connect(logData, &LogData::sendMessageBoxInformation, this, &MainWindow::showMessageBoxInformation);
+
+    connect(logData, &LogData::finished, loggingThread, &QThread::quit);
+    connect(logData, &LogData::finished, logData, &LogData::deleteLater);
     connect(this, &MainWindow::finished, loggingThread, &QThread::quit);
     connect(loggingThread, &QThread::finished, loggingThread, &QThread::deleteLater);
     connect(this, &MainWindow::finished, logData, &LogData::deleteLater);

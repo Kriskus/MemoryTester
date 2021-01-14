@@ -5,6 +5,7 @@
 #include <QFont>
 #include <QTextCursor>
 #include <QCloseEvent>
+#include <QDateTime>
 #include <QThread>
 
 namespace Ui {
@@ -22,6 +23,7 @@ public:
 public slots:
     void getReadedData(QByteArray time, QByteArray data);
     void getSendedData(QByteArray time, QByteArray data);
+    void getTimeDiff(qint64 timeDiff);
 
     void showResponse(QByteArray data);
     void showResponseError(QByteArray data);

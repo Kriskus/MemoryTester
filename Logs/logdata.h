@@ -2,6 +2,7 @@
 #define LOGDATA_H
 
 #include <QObject>
+#include <QDateTime>
 #include <QFile>
 #include <QDir>
 
@@ -16,9 +17,11 @@ public slots:
 
 private:
     QString fileName;
+    bool saveError{false};
 
 signals:
-    QString sendMessageBoxInformation(QString);
+    void sendMessageBoxInformation(QString);
+    void finished();
 };
 
 #endif // LOGDATA_H

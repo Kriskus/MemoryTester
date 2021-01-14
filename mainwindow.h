@@ -73,6 +73,7 @@ signals:
     void finished();
     void sendReadedData(QByteArray, QByteArray);
     void sendWritedData(QByteArray, QByteArray);
+    void sendTimeDifference(qint64);
     void sendStatusBarInformation(QString);
     void sendMessageBoxInformation(QString);
     void sendConnectionStatusDevice(bool);

@@ -1,9 +1,14 @@
 #include "testeroperation.h"
 
-TesterOperation::TesterOperation(QObject *parent, int rep) : QObject(parent), repeats(rep) {
-    currentTrRepeat = 0;
-    currentFvRepeat = 0;
+TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, int trNumBeg, int fvNumBeg) : QObject(parent), repeats(rep) {
+    currentTrLine = 0;
+    currentFvLine = 0;
     currentRepeat = 0;
+    rememberNumbers = remember;
+    currentTrLine = trNumBeg;
+    currentFvLine = fvNumBeg;
+    if(repeats == 0) repeats = 1000000;
+
     dbDevice = new DeviceDataBase();
     trDevice = new DeviceTransaction();
     countCrc = new CounterCrc();
@@ -26,6 +31,8 @@ void TesterOperation::startoperations() {
         endPrint();
     }
     emit sendSequenceToDevice(countCrc->countCrc("beep\t"));
+    if(rememberNumbers)
+        emit sendCurrentNumbers(currentTrLine, currentFvLine);
     emit finished();
 }
 
@@ -46,10 +53,10 @@ void TesterOperation::initFv() {
 
 void TesterOperation::addTrLines() {
     for(int rep = 0; rep < 500; rep++) {
-        emit sendSequenceToDevice(countCrc->countCrc(trDevice->transactionTrLine(currentTrRepeat, rep%7)));
-        emit sendSequenceToDevice(countCrc->countCrc(dbDevice->dbCheckTrLine(rep%7, currentTrRepeat)));
+        emit sendSequenceToDevice(countCrc->countCrc(trDevice->transactionTrLine(currentTrLine, rep%7)));
+        emit sendSequenceToDevice(countCrc->countCrc(dbDevice->dbCheckTrLine(rep%7, currentTrLine)));
         if(increaceTr) {
-            currentTrRepeat++;
+            currentTrLine++;
             increaceTr = false;
         } else {
             increaceTr = true;
@@ -59,10 +66,10 @@ void TesterOperation::addTrLines() {
 
 void TesterOperation::addFvLines() {
     for(int rep = 0; rep < 120; rep++) {
-        emit sendSequenceToDevice(countCrc->countCrc(trDevice->transactionInLine(currentFvRepeat, rep%7)));
-        emit sendSequenceToDevice(countCrc->countCrc(dbDevice->dbCheckTrLine(rep%7, currentFvRepeat)));
+        emit sendSequenceToDevice(countCrc->countCrc(trDevice->transactionInLine(currentFvLine, rep%7)));
+        emit sendSequenceToDevice(countCrc->countCrc(dbDevice->dbCheckFvLine(rep%7, currentFvLine)));
         if(increaceFv) {
-            currentFvRepeat++;
+            currentFvLine++;
             increaceFv = false;
         } else {
             increaceFv = true;

@@ -13,7 +13,7 @@ class TesterOperation : public QObject
 {
     Q_OBJECT
 public:
-    explicit TesterOperation(QObject *parent = nullptr, int rep = 0);
+    explicit TesterOperation(QObject *parent = nullptr, int rep = 0, bool remember = false, int trNumBeg = 0, int fvNumBeg = 0);
 
 public slots:
     void startoperations();
@@ -27,12 +27,13 @@ private:
     int currentLine;
     int repeats;
     int currentRepeat;
-    int currentTrRepeat;
-    int currentFvRepeat;
+    int currentTrLine;
+    int currentFvLine;
     bool increaceTr{false};
     bool increaceFv{false};
     bool currentTrType{true};
     bool activeThread{false};
+    bool rememberNumbers{false};
 
 private slots:
     void initTr();
@@ -44,6 +45,7 @@ private slots:
 signals:
     void sendSequenceToDevice(QByteArray);
     void sendCurrentRepeat(int);
+    void sendCurrentNumbers(int, int);
     void finished();
 };
 

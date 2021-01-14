@@ -21,8 +21,8 @@ DataMonitor::~DataMonitor() {
 
 void DataMonitor::getReadedData(QByteArray time, QByteArray data) {
     qApp->processEvents();
-    if(data.contains("?")) showResponseError(time + "  |  " + data + "\n\n--------------");
-    else showResponse(time + "  |  " + data + "\n\n--------------");
+    if(data.contains("?")) showResponseError(time + "  |  " + data);
+    else showResponse(time + "  |  " + data);
 }
 
 void DataMonitor::getSendedData(QByteArray time, QByteArray data) {
@@ -30,21 +30,27 @@ void DataMonitor::getSendedData(QByteArray time, QByteArray data) {
     data.replace("\t", " ");
     ui->textBrowserMonitor->setTextColor(Qt::black);
     ui->textBrowserMonitor->append(time + "  |  " + data);
-    QThread::msleep(1);
+}
+
+void DataMonitor::getTimeDiff(qint64 timeDiff) {
+    qApp->processEvents();
+    if(timeDiff > 50)
+        ui->textBrowserMonitor->setTextColor(Qt::red);
+    else
+        ui->textBrowserMonitor->setTextColor(Qt::blue);
+    ui->textBrowserMonitor->append("\nCzas oczekiwania na odpowiedź: " + QString::number(timeDiff) + "\n--------------\n\n");
 }
 
 void DataMonitor::showResponse(QByteArray data) {
     data.replace("\t", " ");
     ui->textBrowserMonitor->setTextColor(Qt::blue);
     ui->textBrowserMonitor->append(data);
-    QThread::msleep(1);
 }
 
 void DataMonitor::showResponseError(QByteArray data) {
     data.replace("\t", " ");
     ui->textBrowserMonitor->setTextColor(Qt::red);
     ui->textBrowserMonitor->append(data);
-    QThread::msleep(1);
 }
 
 void DataMonitor::increaseFontSize() {

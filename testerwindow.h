@@ -25,9 +25,11 @@ public slots:
 private:
     Ui::TesterWindow *ui;
     bool statusConnection{false};
+    bool threadInProgress{false};
 
 private slots:
     void getSequenceToSend(QByteArray data);
+    void getLastNumbers(int trNum, int fvNum);
 
     void startTestingThread();
     void stopTestingThread();
@@ -39,6 +41,7 @@ private slots:
 signals:
     void hideMonitor();
     void sendSequenceToDevice(QByteArray);
+    void sendMessageBoxInformation(QString);
     void stopThread();
 };
 
