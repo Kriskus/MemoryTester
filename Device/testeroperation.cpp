@@ -1,12 +1,13 @@
 #include "testeroperation.h"
 
-TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, int trNumBeg, int fvNumBeg) : QObject(parent), repeats(rep) {
+TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, bool fvT, int trNumBeg, int fvNumBeg) : QObject(parent), repeats(rep) {
     currentTrLine = 0;
     currentFvLine = 0;
     currentRepeat = 0;
     rememberNumbers = remember;
     currentTrLine = trNumBeg;
     currentFvLine = fvNumBeg;
+    fvType = fvT;
     if(repeats == 0) repeats = 1000000;
 
     dbDevice = new DeviceDataBase();
@@ -47,8 +48,10 @@ void TesterOperation::initTr() {
 
 void TesterOperation::initFv() {
     emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceInit()));
-    emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceBuyer()));
-    emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceNumber()));
+    if(fvType) {
+        emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceBuyer()));
+        emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceNumber()));
+    }
 }
 
 void TesterOperation::addTrLines() {
