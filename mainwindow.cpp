@@ -112,6 +112,8 @@ void MainWindow::socketConnect() {
         ui->labelConnectionColor->setStyleSheet("QLabel { background: green; border-radius: 8px;}");
         ui->labelConnectionStatus->setText("Połączono z " + ui->lineEditIp_1->text());
         emit sendConnectionStatusDevice(connectionStatus = true);
+    } else {
+        emit sendMessageBoxInformation(socket->errorString());
     }
 }
 
