@@ -40,7 +40,7 @@
      <number>2</number>
     </property>
     <property name="spacing">
-     <number>4</number>
+     <number>2</number>
     </property>
     <item row="0" column="0" colspan="4">
      <widget class="QFrame" name="frame">
@@ -52,19 +52,19 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <property name="leftMargin">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="topMargin">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="bottomMargin">
-        <number>2</number>
+        <number>0</number>
        </property>
        <property name="spacing">
-        <number>4</number>
+        <number>2</number>
        </property>
        <item row="0" column="3">
         <widget class="QLineEdit" name="lineEditPort_1">
@@ -152,6 +152,9 @@ p, li { white-space: pre-wrap; }
        </item>
        <item row="2" column="1" colspan="3">
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>2</number>
+         </property>
          <item>
           <widget class="QLabel" name="labelSpeed_1">
            <property name="text">
@@ -479,19 +482,6 @@ pamięci</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>14</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item row="1" column="0" colspan="4">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
@@ -519,24 +509,6 @@ pamięci</string>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="labelConnectionStatus">
-        <property name="maximumSize">
-         <size>
-          <width>201</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QLabel" name="labelConnectionColor">
         <property name="minimumSize">
          <size>
@@ -552,6 +524,24 @@ pamięci</string>
         </property>
         <property name="text">
          <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelConnectionStatus">
+        <property name="maximumSize">
+         <size>
+          <width>201</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Brak połączenia</string>
         </property>
        </widget>
       </item>
@@ -623,14 +613,27 @@ portu</string>
      </spacer>
     </item>
     <item row="2" column="3">
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="labelVersion">
       <property name="text">
-       <string>Wer. 0.9.2</string>
+       <string>Wer. 0.9.3</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
+    </item>
+    <item row="2" column="0" colspan="3">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>14</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>

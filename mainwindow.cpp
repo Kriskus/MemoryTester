@@ -22,6 +22,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::sendMessageBoxInformation, this, &MainWindow::showMessageBoxInformation);
     connect(this, &MainWindow::sendStatusBarInformation, this, &MainWindow::showStatusBarInformation);
 
+    connect(ui->labelVersion, &QLabel::linkActivated, this, &MainWindow::showVersionInformation);
+    ui->labelVersion->setText("<a href>Wersja 0.9.5</a>");
+    ui->labelConnectionColor->setStyleSheet("QLabel { background: red; border-radius: 8px;}");
     logThread();
 }
 
@@ -54,8 +57,19 @@ void MainWindow::serialConnect() {
     serial->setPortName(ui->comboBoxPortName_1->currentText().split(" ").first());
     serial->setBaudRate(ui->comboBoxConnectionSpeed_1->currentText().toInt());
     serial->setDataBits(QSerialPort::Data8);
+    switch (ui->comboBoxFlowControl_1->currentIndex()) {
+    case 0: serial->setFlowControl(QSerialPort::NoFlowControl); break;
+    case 1: serial->setFlowControl(QSerialPort::SoftwareControl); break;
+    case 2: serial->setFlowControl(QSerialPort::HardwareControl); break;
+    default: break;
+    }
     serial->setStopBits(QSerialPort::OneStop);
-    serial->setParity(QSerialPort::NoParity);
+    switch (ui->comboBoxParity_1->currentIndex()) {
+    case 0: serial->setParity(QSerialPort::NoParity); break;
+    case 1: serial->setParity(QSerialPort::EvenParity); break;
+    case 2: serial->setParity(QSerialPort::OddParity); break;
+    default: break;
+    }
     if(serial->open(QIODevice::ReadWrite)) {
         ui->labelConnectionColor->setStyleSheet("QLabel { background: green; border-radius: 8px;}");
         ui->labelConnectionStatus->setText("Połączono z " + ui->comboBoxPortName_1->currentText().split(" ").first());
@@ -95,7 +109,7 @@ void MainWindow::socketConnect() {
     socket->open(QIODevice::ReadWrite);
     socket->waitForConnected();
     if(socket->isOpen()) {
-        ui->labelConnectionColor->setStyleSheet("QLabel { color : green; }");
+        ui->labelConnectionColor->setStyleSheet("QLabel { background: green; border-radius: 8px;}");
         ui->labelConnectionStatus->setText("Połączono z " + ui->lineEditIp_1->text());
         emit sendConnectionStatusDevice(connectionStatus = true);
     }
@@ -188,7 +202,7 @@ void MainWindow::logThread() {
     LogData *logData;
 
     loggingThread = new QThread(this);
-    logData = new LogData(nullptr, QDateTime::currentDateTime().toString("Log/Log_yyyy_MM_dd_HH_mm_ss_zzz") + ".txt");
+    logData = new LogData(nullptr, QDateTime::currentDateTime().toString("Logs/Log_yyyy_MM_dd_HH_mm_ss_zzz") + ".txt");
 
     connect(this, &MainWindow::sendWritedData, logData, &LogData::appendLogFile);
     connect(this, &MainWindow::sendReadedData, logData, &LogData::appendLogFile);
@@ -201,6 +215,23 @@ void MainWindow::logThread() {
     connect(this, &MainWindow::finished, logData, &LogData::deleteLater);
 
     loggingThread->start();
+}
+
+void MainWindow::showVersionInformation() {
+    QMessageBox::information(this, "Historia wersji", "Wersja 0.9.5\n"
+                                                      "    - poprawiono wyświetlanie połączenie po TCP\n"
+                                                      "    - zwiękoszono maksymalną liczbę początkową faktur i paragonów\n"
+                                                      "    - dodano sprawdzanie czy istnieje katalog z logami i ewentualne utworzenie go\n"
+                                                      "\n"
+                                                      "\n"
+                                                      "Wersja 0.9.4\n"
+                                                      "    - dodano rozróżnienie faktur Online/EJ\n"
+                                                      "    - dodano możliwość ustawienia początkowych numerów w nazwach pozycji\n"
+                                                      "    - dodano możliwość zapamiętania ostatnich numerów po zakończonym teście\n"
+                                                      "\n"
+                                                      "\n"
+                                                      "Wersja 0.9.2\n"
+                                                      "    - wersja początkowa\n\n", QMessageBox::Ok);
 }
 
 void MainWindow::closeWindow() {

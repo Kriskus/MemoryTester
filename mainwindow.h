@@ -49,6 +49,7 @@ public slots:
     void changeTesterWindowStatus();
 
     void logThread();
+    void showVersionInformation();
 
     void closeWindow();
     void closeEvent(QCloseEvent *event);
