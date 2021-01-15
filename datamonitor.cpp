@@ -38,7 +38,7 @@ void DataMonitor::getTimeDiff(qint64 timeDiff) {
         ui->textBrowserMonitor->setTextColor(Qt::red);
     else
         ui->textBrowserMonitor->setTextColor(Qt::blue);
-    ui->textBrowserMonitor->append("\nCzas oczekiwania na odpowiedź: " + QString::number(timeDiff) + "\n--------------\n\n");
+    ui->textBrowserMonitor->append("\nCzas oczekiwania na odpowiedź: " + QString::number(timeDiff) + " ms\n--------------\n\n");
 }
 
 void DataMonitor::showResponse(QByteArray data) {

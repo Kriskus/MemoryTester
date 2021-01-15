@@ -5,7 +5,6 @@ TesterWindow::TesterWindow(QWidget *parent, bool currentStatus) :
     QMainWindow(parent),
     ui(new Ui::TesterWindow) {
     ui->setupUi(this);
-
     connect(ui->pushButtonClose, &QPushButton::clicked, this, &TesterWindow::hideWindow);
     connect(ui->pushButtonStart, &QPushButton::clicked, this, &TesterWindow::startTestingThread);
     connect(ui->pushButtonStop, &QPushButton::clicked, this, &TesterWindow::stopThread);

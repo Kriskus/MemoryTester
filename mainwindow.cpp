@@ -91,7 +91,8 @@ void MainWindow::serialReadWrite(QByteArray data) {
     timeWrite = QDateTime::currentDateTime();
     serial->waitForBytesWritten(10);
     response.clear();
-    timerResponse->start(10000);
+    if(data.contains("trend")) timerResponse->start(25000);
+    else timerResponse->start(5000);
     while(!response.contains("\03") && timerResponse->remainingTime() > 0) {
         response.append(serial->readAll());
         serial->waitForReadyRead(1);
@@ -129,7 +130,8 @@ void MainWindow::socketReadWrite(QByteArray data) {
     timeWrite = QDateTime::currentDateTime();
     socket->waitForBytesWritten(10);
     response.clear();
-    timerResponse->start(10000);
+    if(data.contains("trend")) timerResponse->start(25000);
+    else timerResponse->start(5000);
     while(!response.contains("\03") && timerResponse->remainingTime() > 0) {
         response.append(socket->readAll());
         socket->waitForReadyRead(1);

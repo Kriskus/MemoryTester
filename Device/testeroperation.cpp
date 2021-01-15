@@ -1,6 +1,6 @@
 #include "testeroperation.h"
 
-TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, bool fvT, int trNumBeg, int fvNumBeg) : QObject(parent), repeats(rep) {
+TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, bool fvT, bool doRD, int trNumBeg, int fvNumBeg) : QObject(parent), repeats(rep) {
     currentTrLine = 0;
     currentFvLine = 0;
     currentRepeat = 0;
@@ -12,6 +12,7 @@ TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, bool f
 
     dbDevice = new DeviceDataBase();
     trDevice = new DeviceTransaction();
+    confDevice = new DeviceConfiguration();
     countCrc = new CounterCrc();
 }
 
@@ -38,6 +39,8 @@ void TesterOperation::startoperations() {
     emit sendSequenceToDevice(countCrc->countCrc("beep\t"));
     if(rememberNumbers)
         emit sendCurrentNumbers(currentTrLine, currentFvLine);
+    if(dailyReport)
+        emit sendSequenceToDevice(countCrc->countCrc(confDevice->doDailyRep()));
     emit finished();
 }
 

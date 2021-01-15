@@ -7,13 +7,14 @@
 
 #include "devicedatabase.h"
 #include "devicetransaction.h"
+#include "deviceconfiguration.h"
 #include "Other/countercrc.h"
 
 class TesterOperation : public QObject
 {
     Q_OBJECT
 public:
-    explicit TesterOperation(QObject *parent = nullptr, int rep = 0, bool remember = false, bool fvT = false, int trNumBeg = 0, int fvNumBeg = 0);
+    explicit TesterOperation(QObject *parent = nullptr, int rep = 0, bool remember = false, bool fvT = false, bool doRD = "false", int trNumBeg = 0, int fvNumBeg = 0);
 
 public slots:
     void startoperations();
@@ -22,6 +23,7 @@ public slots:
 private:
     DeviceDataBase *dbDevice;
     DeviceTransaction *trDevice;
+    DeviceConfiguration *confDevice;
     CounterCrc *countCrc;
 
     int currentLine;
@@ -35,6 +37,7 @@ private:
     bool activeThread{false};
     bool rememberNumbers{false};
     bool fvNew{false};
+    bool dailyReport{false};
 
 private slots:
     void initTr();
