@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::sendStatusBarInformation, this, &MainWindow::showStatusBarInformation);
 
     connect(ui->labelVersion, &QLabel::linkActivated, this, &MainWindow::showVersionInformation);
-    ui->labelVersion->setText("<a href>Wersja 0.9.5</a>");
+    ui->labelVersion->setText("<a href>Wersja 0.9.6</a>");
     ui->labelConnectionColor->setStyleSheet("QLabel { background: red; border-radius: 8px;}");
     logThread();
 }
@@ -204,7 +204,7 @@ void MainWindow::logThread() {
     LogData *logData;
 
     loggingThread = new QThread(this);
-    logData = new LogData(nullptr, QDateTime::currentDateTime().toString("Logs/Log_yyyy_MM_dd_HH_mm_ss_zzz") + ".txt");
+    logData = new LogData(nullptr, "Logs/Log_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm_ss_zzz") + ".txt");
 
     connect(this, &MainWindow::sendWritedData, logData, &LogData::appendLogFile);
     connect(this, &MainWindow::sendReadedData, logData, &LogData::appendLogFile);
@@ -220,7 +220,11 @@ void MainWindow::logThread() {
 }
 
 void MainWindow::showVersionInformation() {
-    QMessageBox::information(this, "Historia wersji", "Wersja 0.9.5\n"
+    QMessageBox::information(this, "Historia wersji", "Wersja 0.9.6\n"
+                                                      "    - poprawione rozpoczęcie faktury dla EJ\n"
+                                                      "\n"
+                                                      "\n"
+                                                      "Wersja 0.9.5\n"
                                                       "    - poprawiono wyświetlanie połączenie po TCP\n"
                                                       "    - zwiękoszono maksymalną liczbę początkową faktur i paragonów\n"
                                                       "    - dodano sprawdzanie czy istnieje katalog z logami i ewentualne utworzenie go\n"

@@ -7,7 +7,7 @@ TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, bool f
     rememberNumbers = remember;
     currentTrLine = trNumBeg;
     currentFvLine = fvNumBeg;
-    fvType = fvT;
+    fvNew = fvT;
     if(repeats == 0) repeats = 1000000;
 
     dbDevice = new DeviceDataBase();
@@ -26,8 +26,12 @@ void TesterOperation::startoperations() {
         }
         if(currentTrType) {
             addTrLines();
+            if(!activeThread)
+                break;
         } else {
             addFvLines();
+            if(!activeThread)
+                break;
         }
         endPrint();
     }
@@ -47,10 +51,12 @@ void TesterOperation::initTr() {
 }
 
 void TesterOperation::initFv() {
-    emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceInit()));
-    if(fvType) {
+    if(!fvNew) {
+        emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceOnlineInit()));
         emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceBuyer()));
         emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceNumber()));
+    } else {
+        emit sendSequenceToDevice(countCrc->countCrc(trDevice->invoiceEjInit()));
     }
 }
 
@@ -64,6 +70,8 @@ void TesterOperation::addTrLines() {
         } else {
             increaceTr = true;
         }
+        if(!activeThread)
+            break;
     }
 }
 
@@ -77,6 +85,8 @@ void TesterOperation::addFvLines() {
         } else {
             increaceFv = true;
         }
+        if(!activeThread)
+            break;
     }
 }
 

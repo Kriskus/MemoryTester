@@ -4,12 +4,16 @@ DeviceTransaction::DeviceTransaction(QObject *parent) : QObject(parent) {
 
 }
 
-QByteArray DeviceTransaction::invoiceInit() {
+QByteArray DeviceTransaction::invoiceOnlineInit() {
     return "trfvinit\t";
 }
 
+QByteArray DeviceTransaction::invoiceEjInit() {
+    return "trfvinit\tnbFaktura_Numer_Raz\tninip113-114-16-15\tnaFirma Krzak\tpd31-12-2029\tptPrzelew\tco0\tcm0\t";
+}
+
 QByteArray DeviceTransaction::invoiceBuyer() {
-    return "trfvbuyer\tnaFirma\tKrzaq\tniNIP 113-114-16-15\tsc0\t";
+    return "trfvbuyer\tnaFirma\tKrzak\tniNIP 113-114-16-15\tsc0\t";
 }
 
 QByteArray DeviceTransaction::invoiceNumber() {

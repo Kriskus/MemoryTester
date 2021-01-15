@@ -16,6 +16,7 @@ SOURCES += \
     datamonitor.cpp \
     main.cpp \
     mainwindow.cpp \
+    preparingdevicewindow.cpp \
     testerwindow.cpp
 
 HEADERS += \
@@ -26,11 +27,13 @@ HEADERS += \
     Other/countercrc.h \
     datamonitor.h \
     mainwindow.h \
+    preparingdevicewindow.h \
     testerwindow.h
 
 FORMS += \
     datamonitor.ui \
     mainwindow.ui \
+    preparingdevicewindow.ui \
     testerwindow.ui
 
 # Default rules for deployment.

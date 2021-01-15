@@ -28,6 +28,7 @@ void TesterWindow::getSequenceToSend(QByteArray data) {
 void TesterWindow::getLastNumbers(int trNum, int fvNum) {
     ui->spinBoxTr->setValue(trNum);
     ui->spinBoxFv->setValue(fvNum);
+    ui->checkBoxOther->setChecked(true);
 }
 
 void TesterWindow::startTestingThread() {

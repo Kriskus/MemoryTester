@@ -10,7 +10,8 @@ public:
     explicit DeviceTransaction(QObject *parent = nullptr);
 
 public slots:
-    QByteArray invoiceInit();
+    QByteArray invoiceOnlineInit();
+    QByteArray invoiceEjInit();
     QByteArray invoiceBuyer();
     QByteArray invoiceNumber();
     QByteArray transactionInit();

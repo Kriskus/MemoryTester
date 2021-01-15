@@ -34,7 +34,7 @@ private:
     bool currentTrType{true};
     bool activeThread{false};
     bool rememberNumbers{false};
-    bool fvType{false};
+    bool fvNew{false};
 
 private slots:
     void initTr();
