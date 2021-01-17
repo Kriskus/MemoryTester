@@ -25,12 +25,15 @@ public slots:
     void getSendedData(QByteArray time, QByteArray data);
     void getTimeDiff(qint64 timeDiff);
 
+    void clearTextBrowser();
+    void showCurrentTimeoutCounter();
     void showResponse(QByteArray data);
     void showResponseError(QByteArray data);
 
 private:
     Ui::DataMonitor *ui;
     QFont fontBold;
+    int currentTimeout;
 
 private slots:
     void increaseFontSize();
@@ -41,6 +44,7 @@ private slots:
 
 signals:
     void hideMonitor();
+    void increaseTimeout();
 };
 
 #endif // DATAMONITOR_H

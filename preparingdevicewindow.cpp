@@ -1,9 +1,10 @@
 #include "preparingdevicewindow.h"
 #include "ui_preparingdevicewindow.h"
 
-PreparingDeviceWindow::PreparingDeviceWindow(QWidget *parent) :
+PreparingDeviceWindow::PreparingDeviceWindow(QWidget *parent, bool currentStatusConnection) :
     QMainWindow(parent),
-    ui(new Ui::PreparingDeviceWindow) {
+    ui(new Ui::PreparingDeviceWindow),
+    statusConnection(currentStatusConnection) {
     ui->setupUi(this);
     countCrc = new CounterCrc();
     confDevice = new DeviceConfiguration();
@@ -26,6 +27,8 @@ PreparingDeviceWindow::PreparingDeviceWindow(QWidget *parent) :
     sfskInfo.append("Stawka G           ");
     sfskInfo.append("Data ostatniego RD ");
     sfskInfo.append("Numer unikatowy    ");
+
+    emit sendSequenceToDevice(countCrc->countCrc(confDevice->sfskStatus()));
 }
 
 PreparingDeviceWindow::~PreparingDeviceWindow() {
@@ -34,14 +37,14 @@ PreparingDeviceWindow::~PreparingDeviceWindow() {
     delete confDevice;
 }
 
-void PreparingDeviceWindow::showWindow() {
-    emit sendSequenceToDevice(countCrc->countCrc(confDevice->sfskStatus()));
+void PreparingDeviceWindow::getStatusConnection(bool currentStatus) {
+    statusConnection = currentStatus;
 }
 
 void PreparingDeviceWindow::setDeviceInformation(QByteArray data) {
     ui->textBrowser->clear();
     int line = 0;
-    QList<QByteArray> dataSplitted = data.split("\t");
+    QList<QByteArray> dataSplitted = data.split('\t');
     dataSplitted.removeFirst();
     dataSplitted.removeLast();
     foreach (data, dataSplitted) {

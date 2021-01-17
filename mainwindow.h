@@ -9,10 +9,11 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QThread>
-#include <QTimer>
 
 #include "datamonitor.h"
 #include "testerwindow.h"
+#include "preparingdevicewindow.h"
+#include "Device/deviceconfiguration.h"
 #include "Logs/logdata.h"
 
 QT_BEGIN_NAMESPACE
@@ -47,6 +48,9 @@ public slots:
     void prepareTesterWindow();
     void showTesterWindow();
     void changeTesterWindowStatus();
+    void prepareDeviceWindow();
+    void showDeviceWindow();
+    void changeDeviceWindowStatus();
 
     void logThread();
     void showVersionInformation();
@@ -60,7 +64,7 @@ private:
     QTcpSocket *socket;
     TesterWindow *testerMonitor;
     DataMonitor *dataMonitor;
-    QTimer *timerResponse;
+    PreparingDeviceWindow *deviceWindow;
 
     QDateTime timeWrite;
     QDateTime timeRead;
@@ -68,6 +72,7 @@ private:
     bool connectionStatus{false};
     bool dataMonitorWindowStatus{false};
     bool testerWindowStatus{false};
+    bool deviceWindowStatus{false};
     QByteArray response;
 
 signals:

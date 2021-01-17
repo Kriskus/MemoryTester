@@ -37,9 +37,9 @@ void TesterWindow::startTestingThread() {
             TesterOperation *testOper;
             testingThread = new QThread();
             if(ui->checkBoxOther->isChecked()) {
-                testOper = new TesterOperation(nullptr, ui->spinBoxRepeat->value(), ui->checkBoxRememberNumbers->isChecked(), ui->radioButtonFvOld->isChecked(), ui->spinBoxTr->value(), ui->spinBoxFv->value());
+                testOper = new TesterOperation(nullptr, ui->spinBoxRepeat->value(), ui->checkBoxRememberNumbers->isChecked(), ui->radioButtonFvOld->isChecked(), ui->checkBoxDailyReport->isChecked(), ui->spinBoxTr->value(), ui->spinBoxFv->value());
             } else {
-                testOper = new TesterOperation(nullptr, ui->spinBoxRepeat->value(), ui->checkBoxRememberNumbers->isChecked(), ui->radioButtonFvOld->isChecked());
+                testOper = new TesterOperation(nullptr, ui->spinBoxRepeat->value(), ui->checkBoxRememberNumbers->isChecked(), ui->radioButtonFvOld->isChecked(),ui->checkBoxDailyReport->isChecked());
             }
 
             connect(testingThread, &QThread::started, testOper, &TesterOperation::startoperations);

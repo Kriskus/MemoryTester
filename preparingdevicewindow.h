@@ -17,11 +17,11 @@ class PreparingDeviceWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit PreparingDeviceWindow(QWidget *parent = nullptr);
+    explicit PreparingDeviceWindow(QWidget *parent = nullptr, bool currentStatusConnection = false);
     ~PreparingDeviceWindow();
 
 public slots:
-    void showWindow();
+    void getStatusConnection(bool currentStatus);
     void setDeviceInformation(QByteArray data);
 
     void setHeader();
@@ -33,6 +33,8 @@ private:
     CounterCrc *countCrc;
     DeviceConfiguration *confDevice;
     QList<QByteArray> sfskInfo;
+
+    bool statusConnection{false};
 
 private slots:
     void hideWindow();

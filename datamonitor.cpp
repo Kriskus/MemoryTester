@@ -5,7 +5,7 @@ DataMonitor::DataMonitor(QWidget *parent) : QMainWindow(parent), ui(new Ui::Data
     ui->setupUi(this);
 
     connect(ui->pushButtonClose, &QPushButton::clicked, this, &DataMonitor::hideWindow);
-    connect(ui->pushButtonClear, &QPushButton::clicked, ui->textBrowserMonitor, &QTextBrowser::clear);
+    connect(ui->pushButtonClear, &QPushButton::clicked, this, &DataMonitor::clearTextBrowser);
 
     connect(ui->pushButtonFontPlus, &QPushButton::clicked, this, &DataMonitor::increaseFontSize);
     connect(ui->pushButtonFontMinus, &QPushButton::clicked, this, &DataMonitor::decreaseFontSize);
@@ -13,6 +13,7 @@ DataMonitor::DataMonitor(QWidget *parent) : QMainWindow(parent), ui(new Ui::Data
     fontBold.setBold(true);
     ui->textBrowserMonitor->setCurrentFont(fontBold);
     ui->labelFontSize->setText(QString::number(fontBold.pointSize()));
+    currentTimeout = 0;
 }
 
 DataMonitor::~DataMonitor() {
@@ -34,11 +35,20 @@ void DataMonitor::getSendedData(QByteArray time, QByteArray data) {
 
 void DataMonitor::getTimeDiff(qint64 timeDiff) {
     qApp->processEvents();
-    if(timeDiff > 50)
-        ui->textBrowserMonitor->setTextColor(Qt::red);
-    else
+    if(timeDiff > 50) {
+        ui->textBrowserMonitor->setTextColor("#F9A602");
+    } else
         ui->textBrowserMonitor->setTextColor(Qt::blue);
     ui->textBrowserMonitor->append("\nCzas oczekiwania na odpowiedź: " + QString::number(timeDiff) + " ms\n--------------\n\n");
+}
+
+void DataMonitor::clearTextBrowser() {
+    ui->textBrowserMonitor->clear();
+    ui->labelAmount->setText(QString::number(currentTimeout = 0));
+}
+
+void DataMonitor::showCurrentTimeoutCounter() {
+    ui->labelAmount->setText(QString::number(currentTimeout++));
 }
 
 void DataMonitor::showResponse(QByteArray data) {

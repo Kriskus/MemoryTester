@@ -6,7 +6,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     serial = new QSerialPort(this);
     socket = new QTcpSocket(this);
-    timerResponse = new QTimer(this);
     prepareDataMonitorWindow();
     prepareTesterWindow();
     showAvailableDevices();
@@ -91,13 +90,9 @@ void MainWindow::serialReadWrite(QByteArray data) {
     timeWrite = QDateTime::currentDateTime();
     serial->waitForBytesWritten(10);
     response.clear();
-    if(data.contains("trend")) timerResponse->start(25000);
-    else timerResponse->start(5000);
-    while(!response.contains("\03") && timerResponse->remainingTime() > 0) {
+    while(!response.contains("\03")) {
         response.append(serial->readAll());
         serial->waitForReadyRead(1);
-        if(timerResponse->remainingTime() < 0)
-            emit sendStatusBarInformation("Brak odpowiedzi z urządzenia");
     }
     timeRead = QDateTime::currentDateTime();
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
@@ -130,13 +125,9 @@ void MainWindow::socketReadWrite(QByteArray data) {
     timeWrite = QDateTime::currentDateTime();
     socket->waitForBytesWritten(10);
     response.clear();
-    if(data.contains("trend")) timerResponse->start(25000);
-    else timerResponse->start(5000);
-    while(!response.contains("\03") && timerResponse->remainingTime() > 0) {
+    while(!response.contains("\03")) {
         response.append(socket->readAll());
         socket->waitForReadyRead(1);
-        if(timerResponse->remainingTime() < 0)
-            emit sendStatusBarInformation("Brak odpowiedzi z urządzenia");
     }
     timeRead = QDateTime::currentDateTime();
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
@@ -199,6 +190,25 @@ void MainWindow::showTesterWindow() {
 
 void MainWindow::changeTesterWindowStatus() {
     testerWindowStatus = false;
+}
+
+void MainWindow::prepareDeviceWindow() {
+    deviceWindow = new PreparingDeviceWindow(nullptr, connectionStatus);
+    connect(deviceWindow, &PreparingDeviceWindow::sendSequenceToDevice, this, &MainWindow::deviceReadWrite, Qt::DirectConnection);
+    connect(deviceWindow, &PreparingDeviceWindow::hideMonitor, deviceWindow, &TesterWindow::hide);
+    connect(deviceWindow, &PreparingDeviceWindow::hideMonitor, this, &MainWindow::changeDeviceWindowStatus);
+    connect(this, &MainWindow::finished, deviceWindow, &PreparingDeviceWindow::deleteLater);
+}
+
+void MainWindow::showDeviceWindow() {
+    if(!deviceWindowStatus) {
+        deviceWindow->show();
+        deviceWindowStatus = true;
+    }
+}
+
+void MainWindow::changeDeviceWindowStatus() {
+    deviceWindowStatus = false;
 }
 
 void MainWindow::logThread() {
