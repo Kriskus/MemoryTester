@@ -1,5 +1,7 @@
 #include "deviceconfiguration.h"
 
+static const QByteArray LF = "\010";
+
 DeviceConfiguration::DeviceConfiguration(QObject *parent) : QObject(parent) {
 
 }
@@ -9,7 +11,7 @@ QByteArray DeviceConfiguration::setVatRates() {
 }
 
 QByteArray DeviceConfiguration::setHeader() {
-    return "hdrset\ttx&1&cPosnet Polska S.A.&c&1\0A&2&c02-281&2&3 Warszawa&3\0A&5&cMunicypalna&5&6 33&6\tpr1\t";
+    return "\hdrset\ttx&cPosnet Polska S.A.&c\t";
 }
 
 QByteArray DeviceConfiguration::doDailyRep() {

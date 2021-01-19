@@ -14,19 +14,19 @@ PreparingDeviceWindow::PreparingDeviceWindow(QWidget *parent, bool currentStatus
     connect(ui->pushButtonVatRates, &QPushButton::clicked, this, &PreparingDeviceWindow::setVatRates);
     connect(ui->pushButtonDailyReport, &QPushButton::clicked, this, &PreparingDeviceWindow::doDailyReport);
 
-    sfskInfo.append("Tryb fiskalny      ");
-    sfskInfo.append("Zerowania RAM      ");
-    sfskInfo.append("Raporty dobowe     ");
-    sfskInfo.append("Ilość zmian stawek ");
-    sfskInfo.append("Stawka A           ");
-    sfskInfo.append("Stawka B           ");
-    sfskInfo.append("Stawka C           ");
-    sfskInfo.append("Stawka D           ");
-    sfskInfo.append("Stawka E           ");
-    sfskInfo.append("Stawka F           ");
-    sfskInfo.append("Stawka G           ");
-    sfskInfo.append("Data ostatniego RD ");
-    sfskInfo.append("Numer unikatowy    ");
+    ui->textBrowserStatic->append("Tryb fiskalny      ");
+    ui->textBrowserStatic->append("Zerowania RAM      ");
+    ui->textBrowserStatic->append("Raporty dobowe     ");
+    ui->textBrowserStatic->append("Ilość zmian stawek ");
+    ui->textBrowserStatic->append("Stawka A           ");
+    ui->textBrowserStatic->append("Stawka B           ");
+    ui->textBrowserStatic->append("Stawka C           ");
+    ui->textBrowserStatic->append("Stawka D           ");
+    ui->textBrowserStatic->append("Stawka E           ");
+    ui->textBrowserStatic->append("Stawka F           ");
+    ui->textBrowserStatic->append("Stawka G           ");
+    ui->textBrowserStatic->append("Data ostatniego RD ");
+    ui->textBrowserStatic->append("Numer unikatowy    ");
 
     emit sendSequenceToDevice(countCrc->countCrc(confDevice->sfskStatus()));
 }
@@ -42,13 +42,13 @@ void PreparingDeviceWindow::getStatusConnection(bool currentStatus) {
 }
 
 void PreparingDeviceWindow::setDeviceInformation(QByteArray data) {
-    ui->textBrowser->clear();
-    int line = 0;
+    qApp->processEvents();
+    ui->textBrowserResponse->clear();
     QList<QByteArray> dataSplitted = data.split('\t');
     dataSplitted.removeFirst();
     dataSplitted.removeLast();
     foreach (data, dataSplitted) {
-        ui->textBrowser->append(sfskInfo.at(line++) + "- " + data);
+        ui->textBrowserResponse->append(data.remove(0, 2));
     }
 }
 

@@ -9,7 +9,7 @@ TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, bool f
     currentFvLine = fvNumBeg;
     fvNew = fvT;
     if(repeats == 0) repeats = 1000000;
-
+    dailyReport = doRD;
     dbDevice = new DeviceDataBase();
     trDevice = new DeviceTransaction();
     confDevice = new DeviceConfiguration();

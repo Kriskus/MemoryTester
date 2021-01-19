@@ -15,6 +15,7 @@
 #include "preparingdevicewindow.h"
 #include "Device/deviceconfiguration.h"
 #include "Logs/logdata.h"
+#include "Other/countercrc.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -48,9 +49,9 @@ public slots:
     void prepareTesterWindow();
     void showTesterWindow();
     void changeTesterWindowStatus();
-    void prepareDeviceWindow();
-    void showDeviceWindow();
-    void changeDeviceWindowStatus();
+    void prepareConfWindow();
+    void showConfWindow();
+    void changeConfWindowStatus();
 
     void logThread();
     void showVersionInformation();
@@ -64,7 +65,9 @@ private:
     QTcpSocket *socket;
     TesterWindow *testerMonitor;
     DataMonitor *dataMonitor;
-    PreparingDeviceWindow *deviceWindow;
+    PreparingDeviceWindow *configWindow;
+    CounterCrc *countCrc;
+    DeviceConfiguration *devConf;
 
     QDateTime timeWrite;
     QDateTime timeRead;
@@ -73,16 +76,19 @@ private:
     bool dataMonitorWindowStatus{false};
     bool testerWindowStatus{false};
     bool deviceWindowStatus{false};
+    bool configWindowStatus{false};
     QByteArray response;
 
 signals:
     void finished();
     void sendReadedData(QByteArray, QByteArray);
     void sendWritedData(QByteArray, QByteArray);
+    void sendSequence(QByteArray);
     void sendTimeDifference(qint64);
     void sendStatusBarInformation(QString);
     void sendMessageBoxInformation(QString);
     void sendConnectionStatusDevice(bool);
+    void sendSfskStatus(QByteArray);
 
 };
 #endif // MAINWINDOW_H

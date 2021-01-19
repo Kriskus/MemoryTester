@@ -10,6 +10,8 @@ DataMonitor::DataMonitor(QWidget *parent) : QMainWindow(parent), ui(new Ui::Data
     connect(ui->pushButtonFontPlus, &QPushButton::clicked, this, &DataMonitor::increaseFontSize);
     connect(ui->pushButtonFontMinus, &QPushButton::clicked, this, &DataMonitor::decreaseFontSize);
 
+    connect(this, &DataMonitor::increaseTimeout, this, &DataMonitor::showCurrentTimeoutCounter);
+
     fontBold.setBold(true);
     ui->textBrowserMonitor->setCurrentFont(fontBold);
     ui->labelFontSize->setText(QString::number(fontBold.pointSize()));
@@ -37,6 +39,7 @@ void DataMonitor::getTimeDiff(qint64 timeDiff) {
     qApp->processEvents();
     if(timeDiff > 50) {
         ui->textBrowserMonitor->setTextColor("#F9A602");
+        emit increaseTimeout();
     } else
         ui->textBrowserMonitor->setTextColor(Qt::blue);
     ui->textBrowserMonitor->append("\nCzas oczekiwania na odpowiedź: " + QString::number(timeDiff) + " ms\n--------------\n\n");
@@ -48,7 +51,7 @@ void DataMonitor::clearTextBrowser() {
 }
 
 void DataMonitor::showCurrentTimeoutCounter() {
-    ui->labelAmount->setText(QString::number(currentTimeout++));
+    ui->labelAmount->setText(QString::number(++currentTimeout));
 }
 
 void DataMonitor::showResponse(QByteArray data) {

@@ -31,7 +31,24 @@
      <number>4</number>
     </property>
     <item row="0" column="0" rowspan="5">
-     <widget class="QTextBrowser" name="textBrowser"/>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QTextBrowser" name="textBrowserStatic">
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextBrowser" name="textBrowserResponse"/>
+      </item>
+     </layout>
     </item>
     <item row="0" column="1">
      <widget class="QPushButton" name="pushButtonHeader">

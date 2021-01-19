@@ -32,7 +32,6 @@ private:
     Ui::PreparingDeviceWindow *ui;
     CounterCrc *countCrc;
     DeviceConfiguration *confDevice;
-    QList<QByteArray> sfskInfo;
 
     bool statusConnection{false};
 

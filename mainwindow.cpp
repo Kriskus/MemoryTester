@@ -8,11 +8,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     socket = new QTcpSocket(this);
     prepareDataMonitorWindow();
     prepareTesterWindow();
+    prepareConfWindow();
     showAvailableDevices();
+    countCrc = new CounterCrc();
+    devConf = new DeviceConfiguration();
 
     connect(ui->pushButtonExit, &QPushButton::clicked, this, &MainWindow::close);
     connect(ui->pushButtonDataMonitor, &QPushButton::clicked, this, &MainWindow::showDataMonitorWindow);
     connect(ui->pushButtonMemoryTester, &QPushButton::clicked, this, &MainWindow::showTesterWindow);
+    connect(ui->pushButtonConfiguration, &QPushButton::clicked, this, &MainWindow::showConfWindow);
 
     connect(ui->pushButtonConnect_1, &QPushButton::clicked, this, &MainWindow::deviceConnect);
     connect(ui->pushButtonDisconnect_1, &QPushButton::clicked, this, &MainWindow::deviceDisconnect);
@@ -20,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     connect(this, &MainWindow::sendMessageBoxInformation, this, &MainWindow::showMessageBoxInformation);
     connect(this, &MainWindow::sendStatusBarInformation, this, &MainWindow::showStatusBarInformation);
+    connect(this, &MainWindow::sendSequence, this, &MainWindow::deviceReadWrite);
 
     connect(ui->labelVersion, &QLabel::linkActivated, this, &MainWindow::showVersionInformation);
     ui->labelVersion->setText("<a href>Wersja 0.9.6</a>");
@@ -29,6 +34,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 MainWindow::~MainWindow() {
     delete ui;
+    delete serial;
+    delete socket;
+    delete devConf;
+    delete testerMonitor;
+    delete dataMonitor;
+    delete configWindow;
 }
 
 void MainWindow::deviceConnect() {
@@ -73,6 +84,7 @@ void MainWindow::serialConnect() {
         ui->labelConnectionColor->setStyleSheet("QLabel { background: green; border-radius: 8px;}");
         ui->labelConnectionStatus->setText("Połączono z " + ui->comboBoxPortName_1->currentText().split(" ").first());
         emit sendConnectionStatusDevice(connectionStatus = true);
+        emit sendSequence(countCrc->countCrc(devConf->sfskStatus()));
     } else {
         emit sendMessageBoxInformation(serial->errorString());
     }
@@ -98,6 +110,8 @@ void MainWindow::serialReadWrite(QByteArray data) {
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
     emit sendReadedData(timeRead.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), response);
     emit sendTimeDifference(timeWrite.msecsTo(timeRead));
+    if(response.contains("sfsk"))
+        emit sendSfskStatus(response);
 }
 
 void MainWindow::socketConnect() {
@@ -108,6 +122,7 @@ void MainWindow::socketConnect() {
         ui->labelConnectionColor->setStyleSheet("QLabel { background: green; border-radius: 8px;}");
         ui->labelConnectionStatus->setText("Połączono z " + ui->lineEditIp_1->text());
         emit sendConnectionStatusDevice(connectionStatus = true);
+        emit sendSequence(countCrc->countCrc(devConf->sfskStatus()));
     } else {
         emit sendMessageBoxInformation(socket->errorString());
     }
@@ -133,6 +148,8 @@ void MainWindow::socketReadWrite(QByteArray data) {
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
     emit sendReadedData(timeRead.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), response);
     emit sendTimeDifference(timeWrite.msecsTo(timeRead));
+    if(response.contains("sfsk"))
+        emit sendSfskStatus(response);
 }
 
 void MainWindow::showAvailableDevices() {
@@ -192,23 +209,25 @@ void MainWindow::changeTesterWindowStatus() {
     testerWindowStatus = false;
 }
 
-void MainWindow::prepareDeviceWindow() {
-    deviceWindow = new PreparingDeviceWindow(nullptr, connectionStatus);
-    connect(deviceWindow, &PreparingDeviceWindow::sendSequenceToDevice, this, &MainWindow::deviceReadWrite, Qt::DirectConnection);
-    connect(deviceWindow, &PreparingDeviceWindow::hideMonitor, deviceWindow, &TesterWindow::hide);
-    connect(deviceWindow, &PreparingDeviceWindow::hideMonitor, this, &MainWindow::changeDeviceWindowStatus);
-    connect(this, &MainWindow::finished, deviceWindow, &PreparingDeviceWindow::deleteLater);
+void MainWindow::prepareConfWindow() {
+    configWindow = new PreparingDeviceWindow(nullptr, connectionStatus);
+    connect(configWindow, &PreparingDeviceWindow::sendSequenceToDevice, this, &MainWindow::deviceReadWrite, Qt::DirectConnection);
+    connect(this, &MainWindow::sendConnectionStatusDevice, configWindow, &PreparingDeviceWindow::getStatusConnection, Qt::DirectConnection);
+    connect(this, &MainWindow::sendSfskStatus, configWindow, &PreparingDeviceWindow::setDeviceInformation, Qt::DirectConnection);
+    connect(configWindow, &PreparingDeviceWindow::hideMonitor, configWindow, &TesterWindow::hide);
+    connect(configWindow, &PreparingDeviceWindow::hideMonitor, this, &MainWindow::changeConfWindowStatus);
+    connect(this, &MainWindow::finished, configWindow, &PreparingDeviceWindow::deleteLater);
 }
 
-void MainWindow::showDeviceWindow() {
-    if(!deviceWindowStatus) {
-        deviceWindow->show();
-        deviceWindowStatus = true;
+void MainWindow::showConfWindow() {
+    if(!configWindowStatus) {
+        configWindow->show();
+        configWindowStatus = true;
     }
 }
 
-void MainWindow::changeDeviceWindowStatus() {
-    deviceWindowStatus = false;
+void MainWindow::changeConfWindowStatus() {
+    configWindowStatus = false;
 }
 
 void MainWindow::logThread() {
@@ -232,7 +251,16 @@ void MainWindow::logThread() {
 }
 
 void MainWindow::showVersionInformation() {
-    QMessageBox::information(this, "Historia wersji", "Wersja 0.9.6\n"
+    QMessageBox::information(this, "Historia wersji", "Wersja 0.9.7\n"
+                                                      "    - dodany raport dobowy\n"
+                                                      "    - dodane programowanie stawek VAT\n"
+                                                      "    - dodane programowanie nagłówka\n"
+                                                      "    - dodane drukowanie raportu dobowego po zakończeniu testu\n"
+                                                      "    - usunięty timeout przy odczytywaniu odpowiedzi z drukarki\n"
+                                                      "              (przy błędzie może odczytywać w nieskończoność\n"
+                                                      "\n"
+                                                      "\n"
+                                                      "Wersja 0.9.6\n"
                                                       "    - poprawione rozpoczęcie faktury dla EJ\n"
                                                       "\n"
                                                       "\n"
