@@ -22,7 +22,8 @@ public:
 
 public slots:
     void getStatusConnection(bool currentStatus);
-    void setDeviceInformation(QByteArray data);
+    void setDeviceInformationSfsk(QByteArray data);
+    void setDeviceInformationScnt(QByteArray data);
 
     void setHeader();
     void setVatRates();

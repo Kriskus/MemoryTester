@@ -15,6 +15,7 @@ public slots:
     QByteArray setHeader();
     QByteArray doDailyRep();
     QByteArray sfskStatus();
+    QByteArray scntStatus();
 
 signals:
     void sendSequence(QByteArray);

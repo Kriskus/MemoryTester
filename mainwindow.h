@@ -89,6 +89,7 @@ signals:
     void sendMessageBoxInformation(QString);
     void sendConnectionStatusDevice(bool);
     void sendSfskStatus(QByteArray);
+    void sendScntStatus(QByteArray);
 
 };
 #endif // MAINWINDOW_H

@@ -11,7 +11,7 @@ QByteArray DeviceConfiguration::setVatRates() {
 }
 
 QByteArray DeviceConfiguration::setHeader() {
-    return "\hdrset\ttx&cPosnet Polska S.A.&c\t";
+    return "hdrset\ttx&cPosnet Polska S.A.&c\t";
 }
 
 QByteArray DeviceConfiguration::doDailyRep() {
@@ -20,4 +20,8 @@ QByteArray DeviceConfiguration::doDailyRep() {
 
 QByteArray DeviceConfiguration::sfskStatus() {
     return "sfsk\t";
+}
+
+QByteArray DeviceConfiguration::scntStatus() {
+    return "scnt\t";
 }

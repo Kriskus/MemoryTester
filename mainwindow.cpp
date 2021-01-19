@@ -85,6 +85,7 @@ void MainWindow::serialConnect() {
         ui->labelConnectionStatus->setText("Połączono z " + ui->comboBoxPortName_1->currentText().split(" ").first());
         emit sendConnectionStatusDevice(connectionStatus = true);
         emit sendSequence(countCrc->countCrc(devConf->sfskStatus()));
+        emit sendSequence(countCrc->countCrc(devConf->scntStatus()));
     } else {
         emit sendMessageBoxInformation(serial->errorString());
     }
@@ -112,6 +113,10 @@ void MainWindow::serialReadWrite(QByteArray data) {
     emit sendTimeDifference(timeWrite.msecsTo(timeRead));
     if(response.contains("sfsk"))
         emit sendSfskStatus(response);
+    if(response.contains("trend"))
+        emit sendSequence(countCrc->countCrc(devConf->scntStatus()));
+    if(response.contains("scnt"))
+        emit sendScntStatus(response);
 }
 
 void MainWindow::socketConnect() {
@@ -123,6 +128,7 @@ void MainWindow::socketConnect() {
         ui->labelConnectionStatus->setText("Połączono z " + ui->lineEditIp_1->text());
         emit sendConnectionStatusDevice(connectionStatus = true);
         emit sendSequence(countCrc->countCrc(devConf->sfskStatus()));
+        emit sendSequence(countCrc->countCrc(devConf->scntStatus()));
     } else {
         emit sendMessageBoxInformation(socket->errorString());
     }
@@ -150,6 +156,10 @@ void MainWindow::socketReadWrite(QByteArray data) {
     emit sendTimeDifference(timeWrite.msecsTo(timeRead));
     if(response.contains("sfsk"))
         emit sendSfskStatus(response);
+    if(response.contains("trend"))
+        emit sendSequence(countCrc->countCrc(devConf->scntStatus()));
+    if(response.contains("scnt"))
+        emit sendScntStatus(response);
 }
 
 void MainWindow::showAvailableDevices() {
@@ -213,7 +223,8 @@ void MainWindow::prepareConfWindow() {
     configWindow = new PreparingDeviceWindow(nullptr, connectionStatus);
     connect(configWindow, &PreparingDeviceWindow::sendSequenceToDevice, this, &MainWindow::deviceReadWrite, Qt::DirectConnection);
     connect(this, &MainWindow::sendConnectionStatusDevice, configWindow, &PreparingDeviceWindow::getStatusConnection, Qt::DirectConnection);
-    connect(this, &MainWindow::sendSfskStatus, configWindow, &PreparingDeviceWindow::setDeviceInformation, Qt::DirectConnection);
+    connect(this, &MainWindow::sendSfskStatus, configWindow, &PreparingDeviceWindow::setDeviceInformationSfsk, Qt::DirectConnection);
+    connect(this, &MainWindow::sendScntStatus, configWindow, &PreparingDeviceWindow::setDeviceInformationScnt, Qt::DirectConnection);
     connect(configWindow, &PreparingDeviceWindow::hideMonitor, configWindow, &TesterWindow::hide);
     connect(configWindow, &PreparingDeviceWindow::hideMonitor, this, &MainWindow::changeConfWindowStatus);
     connect(this, &MainWindow::finished, configWindow, &PreparingDeviceWindow::deleteLater);

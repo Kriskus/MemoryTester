@@ -14,20 +14,30 @@ PreparingDeviceWindow::PreparingDeviceWindow(QWidget *parent, bool currentStatus
     connect(ui->pushButtonVatRates, &QPushButton::clicked, this, &PreparingDeviceWindow::setVatRates);
     connect(ui->pushButtonDailyReport, &QPushButton::clicked, this, &PreparingDeviceWindow::doDailyReport);
 
-    ui->textBrowserStatic->append("Tryb fiskalny      ");
-    ui->textBrowserStatic->append("Zerowania RAM      ");
-    ui->textBrowserStatic->append("Raporty dobowe     ");
-    ui->textBrowserStatic->append("Ilość zmian stawek ");
-    ui->textBrowserStatic->append("Stawka A           ");
-    ui->textBrowserStatic->append("Stawka B           ");
-    ui->textBrowserStatic->append("Stawka C           ");
-    ui->textBrowserStatic->append("Stawka D           ");
-    ui->textBrowserStatic->append("Stawka E           ");
-    ui->textBrowserStatic->append("Stawka F           ");
-    ui->textBrowserStatic->append("Stawka G           ");
-    ui->textBrowserStatic->append("Data ostatniego RD ");
-    ui->textBrowserStatic->append("Numer unikatowy    ");
+    ui->textBrowserStaticSfsk->append("Tryb fiskalny      ");
+    ui->textBrowserStaticSfsk->append("Zerowania RAM      ");
+    ui->textBrowserStaticSfsk->append("Raporty dobowe     ");
+    ui->textBrowserStaticSfsk->append("Ilość zmian stawek ");
+    ui->textBrowserStaticSfsk->append("Stawka A           ");
+    ui->textBrowserStaticSfsk->append("Stawka B           ");
+    ui->textBrowserStaticSfsk->append("Stawka C           ");
+    ui->textBrowserStaticSfsk->append("Stawka D           ");
+    ui->textBrowserStaticSfsk->append("Stawka E           ");
+    ui->textBrowserStaticSfsk->append("Stawka F           ");
+    ui->textBrowserStaticSfsk->append("Stawka G           ");
+    ui->textBrowserStaticSfsk->append("Data ostatniego RD ");
+    ui->textBrowserStaticSfsk->append("Numer unikatowy    ");
 
+    ui->textBrowserStaticScnt->append("Licznik RD");
+    ui->textBrowserStaticScnt->append("Nr ostatniego nagłówka");
+    ui->textBrowserStaticScnt->append("Licznik paragonów");
+    ui->textBrowserStaticScnt->append("Licznik faktur");
+    ui->textBrowserStaticScnt->append("Nr unikatowy");
+    ui->textBrowserStaticScnt->append("Licznik paragonów anulowanych");
+    ui->textBrowserStaticScnt->append("Nr ostatniego paragonu");
+    ui->textBrowserStaticScnt->append("Licznik faktur anulowanych");
+
+    emit sendSequenceToDevice(countCrc->countCrc(confDevice->sfskStatus()));
     emit sendSequenceToDevice(countCrc->countCrc(confDevice->sfskStatus()));
 }
 
@@ -41,14 +51,25 @@ void PreparingDeviceWindow::getStatusConnection(bool currentStatus) {
     statusConnection = currentStatus;
 }
 
-void PreparingDeviceWindow::setDeviceInformation(QByteArray data) {
+void PreparingDeviceWindow::setDeviceInformationSfsk(QByteArray data) {
     qApp->processEvents();
-    ui->textBrowserResponse->clear();
+    ui->textBrowserResponseSfsk->clear();
     QList<QByteArray> dataSplitted = data.split('\t');
     dataSplitted.removeFirst();
     dataSplitted.removeLast();
     foreach (data, dataSplitted) {
-        ui->textBrowserResponse->append(data.remove(0, 2));
+        ui->textBrowserResponseSfsk->append(data.remove(0, 2));
+    }
+}
+
+void PreparingDeviceWindow::setDeviceInformationScnt(QByteArray data) {
+    qApp->processEvents();
+    ui->textBrowserResponseScnt->clear();
+    QList<QByteArray> dataSplitted = data.split('\t');
+    dataSplitted.removeFirst();
+    dataSplitted.removeLast();
+    foreach (data, dataSplitted) {
+        ui->textBrowserResponseScnt->append(data.remove(0, 2));
     }
 }
 
