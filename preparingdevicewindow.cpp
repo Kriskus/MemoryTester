@@ -33,9 +33,9 @@ PreparingDeviceWindow::PreparingDeviceWindow(QWidget *parent, bool currentStatus
     ui->textBrowserStaticScnt->append("Licznik paragonów");
     ui->textBrowserStaticScnt->append("Licznik faktur");
     ui->textBrowserStaticScnt->append("Nr unikatowy");
-    ui->textBrowserStaticScnt->append("Licznik paragonów anulowanych");
+    ui->textBrowserStaticScnt->append("L. paragonów anulowanych");
     ui->textBrowserStaticScnt->append("Nr ostatniego paragonu");
-    ui->textBrowserStaticScnt->append("Licznik faktur anulowanych");
+    ui->textBrowserStaticScnt->append("L. faktur anulowanych");
 
     emit sendSequenceToDevice(countCrc->countCrc(confDevice->sfskStatus()));
     emit sendSequenceToDevice(countCrc->countCrc(confDevice->sfskStatus()));

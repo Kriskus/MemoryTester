@@ -13,6 +13,7 @@
 #include "datamonitor.h"
 #include "testerwindow.h"
 #include "preparingdevicewindow.h"
+#include "countertimer.h"
 #include "Device/deviceconfiguration.h"
 #include "Logs/logdata.h"
 #include "Other/countercrc.h"
@@ -54,6 +55,7 @@ public slots:
     void changeConfWindowStatus();
 
     void logThread();
+    void countThread();
     void showVersionInformation();
 
     void closeWindow();
@@ -77,6 +79,7 @@ private:
     bool testerWindowStatus{false};
     bool deviceWindowStatus{false};
     bool configWindowStatus{false};
+    bool fiscalInvoice{false};
     QByteArray response;
 
 signals:

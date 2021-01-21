@@ -14,6 +14,7 @@ SOURCES += \
     Device/devicetransaction.cpp \
     Device/testeroperation.cpp \
     Logs/logdata.cpp \
+    countertimer.cpp \
     datamonitor.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     Device/testeroperation.h \
     Logs/logdata.h \
     Other/countercrc.h \
+    countertimer.h \
     datamonitor.h \
     mainwindow.h \
     preparingdevicewindow.h \

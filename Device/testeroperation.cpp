@@ -36,7 +36,6 @@ void TesterOperation::startoperations() {
         }
         endPrint();
     }
-    emit sendSequenceToDevice(countCrc->countCrc("beep\t"));
     if(rememberNumbers)
         emit sendCurrentNumbers(currentTrLine, currentFvLine);
     if(dailyReport)

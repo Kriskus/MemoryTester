@@ -34,6 +34,7 @@ private slots:
     void startTestingThread();
     void stopTestingThread();
     void showCurrentRepeat(int currentRepeat);
+    void setCustom(int);
 
     void hideWindow();
     void closeEvent(QCloseEvent *event);
@@ -42,6 +43,7 @@ signals:
     void hideMonitor();
     void sendSequenceToDevice(QByteArray);
     void sendMessageBoxInformation(QString);
+    void endTest();
     void stopThread();
 };
 

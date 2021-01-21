@@ -8,6 +8,8 @@ TesterWindow::TesterWindow(QWidget *parent, bool currentStatus) :
     connect(ui->pushButtonClose, &QPushButton::clicked, this, &TesterWindow::hideWindow);
     connect(ui->pushButtonStart, &QPushButton::clicked, this, &TesterWindow::startTestingThread);
     connect(ui->pushButtonStop, &QPushButton::clicked, this, &TesterWindow::stopThread);
+    connect(ui->spinBoxFv, SIGNAL(valueChanged(int)), this, SLOT(setCustom(int)));
+    connect(ui->spinBoxTr, SIGNAL(valueChanged(int)), this, SLOT(setCustom(int)));
     statusConnection = currentStatus;
 }
 
@@ -47,6 +49,7 @@ void TesterWindow::startTestingThread() {
             connect(testOper, &TesterOperation::sendCurrentRepeat, this, &TesterWindow::showCurrentRepeat, Qt::DirectConnection);
             connect(this, &TesterWindow::stopThread, testOper, &TesterOperation::stopOperation, Qt::DirectConnection);
             connect(testOper, &TesterOperation::sendCurrentNumbers, this, &TesterWindow::getLastNumbers);
+            connect(testOper, &TesterOperation::finished, this, &TesterWindow::endTest, Qt::DirectConnection);
             connect(testOper, &TesterOperation::finished, testingThread, &QThread::quit);
             connect(testingThread, &QThread::finished, testingThread, &QThread::deleteLater);
             connect(testOper, &TesterOperation::finished, testOper, &TesterOperation::deleteLater);
@@ -66,6 +69,11 @@ void TesterWindow::stopTestingThread() {
 
 void TesterWindow::showCurrentRepeat(int currentRepeat) {
     ui->labelCurrentRepeat->setText(QString::number(currentRepeat));
+}
+
+void TesterWindow::setCustom(int) {
+    if(ui->spinBoxFv->value() > 0 || ui->spinBoxTr->value() > 0) ui->checkBoxOther->setChecked(1);
+    else ui->checkBoxOther->setChecked(0);
 }
 
 void TesterWindow::hideWindow() {

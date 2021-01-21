@@ -16,6 +16,8 @@ DataMonitor::DataMonitor(QWidget *parent) : QMainWindow(parent), ui(new Ui::Data
     ui->textBrowserMonitor->setCurrentFont(fontBold);
     ui->labelFontSize->setText(QString::number(fontBold.pointSize()));
     currentTimeout = 0;
+    ui->labelAmount->setText("0");
+    ui->labelTimeAverage->setText("0");
 }
 
 DataMonitor::~DataMonitor() {
@@ -32,6 +34,7 @@ void DataMonitor::getSendedData(QByteArray time, QByteArray data) {
     qApp->processEvents();
     data.replace("\t", " ");
     ui->textBrowserMonitor->setTextColor(Qt::black);
+    ui->textBrowserMonitor->append("#" + QString::number(currentBlock++));
     ui->textBrowserMonitor->append(time + "  |  " + data);
 }
 
@@ -64,6 +67,14 @@ void DataMonitor::showResponseError(QByteArray data) {
     data.replace("\t", " ");
     ui->textBrowserMonitor->setTextColor(Qt::red);
     ui->textBrowserMonitor->append(data);
+}
+
+void DataMonitor::showAverageTime(int currAvrTime) {
+    ui->labelTimeAverage->setText(QString::number(currAvrTime) + " ms");
+}
+
+void DataMonitor::endTest() {
+    emit requestClearTime();
 }
 
 void DataMonitor::increaseFontSize() {

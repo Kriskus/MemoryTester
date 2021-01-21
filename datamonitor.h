@@ -8,6 +8,8 @@
 #include <QDateTime>
 #include <QThread>
 
+#include "countertimer.h"
+
 namespace Ui {
 class DataMonitor;
 }
@@ -29,11 +31,15 @@ public slots:
     void showCurrentTimeoutCounter();
     void showResponse(QByteArray data);
     void showResponseError(QByteArray data);
+    void showAverageTime(int currAvrTime);
+
+    void endTest();
 
 private:
     Ui::DataMonitor *ui;
     QFont fontBold;
     int currentTimeout;
+    int currentBlock{1};
 
 private slots:
     void increaseFontSize();
@@ -45,6 +51,8 @@ private slots:
 signals:
     void hideMonitor();
     void increaseTimeout();
+    void sendNewTime(qint64);
+    void requestClearTime();
 };
 
 #endif // DATAMONITOR_H
