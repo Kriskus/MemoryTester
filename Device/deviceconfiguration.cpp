@@ -25,3 +25,7 @@ QByteArray DeviceConfiguration::sfskStatus() {
 QByteArray DeviceConfiguration::scntStatus() {
     return "scnt\t";
 }
+
+QByteArray DeviceConfiguration::sprnStatus() {
+    return "!sprn\t";
+}

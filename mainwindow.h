@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QThread>
+#include <QTimer>
 
 #include "datamonitor.h"
 #include "testerwindow.h"
@@ -34,12 +35,15 @@ public slots:
     void deviceConnect();
     void deviceDisconnect();
     void deviceReadWrite(QByteArray data);
+    void deviceAsynchReadWrite(QByteArray data);
     void serialConnect();
     void serialDisconnect();
     void serialReadWrite(QByteArray data);
+    void serialAsynchReadWrite(QByteArray data);
     void socketConnect();
     void socketDisconnect();
     void socketReadWrite(QByteArray data);
+    void socketAsynchReadWrite(QByteArray data);
     void showAvailableDevices();
     void showMessageBoxInformation(QString information);
     void showStatusBarInformation(QString information);
@@ -70,6 +74,7 @@ private:
     PreparingDeviceWindow *configWindow;
     CounterCrc *countCrc;
     DeviceConfiguration *devConf;
+    QTimer *timer;
 
     QDateTime timeWrite;
     QDateTime timeRead;
@@ -79,8 +84,10 @@ private:
     bool testerWindowStatus{false};
     bool deviceWindowStatus{false};
     bool configWindowStatus{false};
+    bool heatError{false};
     bool fiscalInvoice{false};
     QByteArray response;
+    QByteArray responseaAsyn;
 
 signals:
     void finished();
@@ -93,6 +100,6 @@ signals:
     void sendConnectionStatusDevice(bool);
     void sendSfskStatus(QByteArray);
     void sendScntStatus(QByteArray);
-
+    void sendSprnStatus(QByteArray);
 };
 #endif // MAINWINDOW_H

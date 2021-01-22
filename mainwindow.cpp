@@ -30,11 +30,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::sendStatusBarInformation, this, &MainWindow::showStatusBarInformation);
     connect(this, &MainWindow::sendSequence, this, &MainWindow::deviceReadWrite);
 
+    connect(this, &MainWindow::sendSprnStatus, this, &MainWindow::deviceAsynchReadWrite);
+
     connect(ui->labelVersion, &QLabel::linkActivated, this, &MainWindow::showVersionInformation);
     ui->labelVersion->setText("<a href>Wersja</a>");
     ui->labelConnectionColor->setStyleSheet("QLabel { background: red; border-radius: 8px;}");
     logThread();
     countThread();
+    timer = new QTimer(this);
 }
 
 MainWindow::~MainWindow() {
@@ -66,6 +69,13 @@ void MainWindow::deviceReadWrite(QByteArray data) {
     if(connectionStatus) {
         if(ui->radioButtonCom_1->isChecked()) serialReadWrite(data);
         else socketReadWrite(data);
+    }
+}
+
+void MainWindow::deviceAsynchReadWrite(QByteArray data) {
+    if(connectionStatus) {
+        if(ui->radioButtonCom_1->isChecked()) serialAsynchReadWrite(data);
+        else socketAsynchReadWrite(data);
     }
 }
 
@@ -108,9 +118,12 @@ void MainWindow::serialReadWrite(QByteArray data) {
     serial->write(data);
     timeWrite = QDateTime::currentDateTime();
     response.clear();
+    timer->start(2000);
     while(!response.contains("\03")) {
         response.append(serial->readAll());
         serial->waitForReadyRead(1);
+        if(timer->remainingTime() <= 0)
+            emit sendSprnStatus(countCrc->countCrc(devConf->sprnStatus()));
     }
     timeRead = QDateTime::currentDateTime();
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
@@ -121,10 +134,24 @@ void MainWindow::serialReadWrite(QByteArray data) {
         emit sendTimeDifference(0);
         emit sendSequence(countCrc->countCrc(devConf->scntStatus()));
     } else {
-        emit sendTimeDifference(timeWrite.msecsTo(timeRead));
+        if(!heatError) emit sendTimeDifference(timeWrite.msecsTo(timeRead));
+        else emit sendTimeDifference(0);
     }
     if(response.contains("scnt"))
         emit sendScntStatus(response);
+}
+
+void MainWindow::serialAsynchReadWrite(QByteArray data) {
+    serial->write(data);
+    responseaAsyn.clear();
+    if(!heatError) {
+        while(!responseaAsyn.contains("\03")) {
+            responseaAsyn.append(serial->readAll());
+            serial->waitForReadyRead(1);
+        }
+        if(responseaAsyn.contains("\tpr6\t"))
+            heatError = true;
+    }
 }
 
 void MainWindow::socketConnect() {
@@ -153,9 +180,11 @@ void MainWindow::socketReadWrite(QByteArray data) {
     socket->write(data);
     timeWrite = QDateTime::currentDateTime();
     response.clear();
+
     while(!response.contains("\03")) {
         response.append(socket->readAll());
         socket->waitForReadyRead(1);
+
     }
     timeRead = QDateTime::currentDateTime();
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
@@ -170,6 +199,15 @@ void MainWindow::socketReadWrite(QByteArray data) {
     }
     if(response.contains("scnt"))
         emit sendScntStatus(response);
+}
+
+void MainWindow::socketAsynchReadWrite(QByteArray data) {
+    socket->write(data);
+    responseaAsyn.clear();
+    while(!responseaAsyn.contains("\03")) {
+        responseaAsyn.append(socket->readAll());
+        socket->waitForReadyRead(1);
+    }
 }
 
 void MainWindow::showAvailableDevices() {
@@ -270,25 +308,25 @@ void MainWindow::logThread() {
 }
 
 void MainWindow::countThread() {
-        QThread *timeCounterThread;
-        CounterTimer *countTime;
-        timeCounterThread = new QThread(this);
-        countTime = new CounterTimer();
-        countTime->moveToThread(timeCounterThread);
+    QThread *timeCounterThread;
+    CounterTimer *countTime;
+    timeCounterThread = new QThread(this);
+    countTime = new CounterTimer();
+    countTime->moveToThread(timeCounterThread);
 
-        connect(this, &MainWindow::sendTimeDifference, countTime, &CounterTimer::countTime, Qt::DirectConnection);
-        connect(dataMonitor, &DataMonitor::requestClearTime, countTime, &CounterTimer::clearTimes, Qt::DirectConnection);
-        connect(countTime, &CounterTimer::sendCurrentAverageTime, dataMonitor, &DataMonitor::showAverageTime, Qt::DirectConnection);
-        connect(this, &MainWindow::finished, timeCounterThread, &QThread::quit);
-        connect(timeCounterThread, &QThread::finished, timeCounterThread, &QThread::deleteLater);
-        connect(this, &MainWindow::finished, countTime, &CounterTimer::deleteLater);
+    connect(this, &MainWindow::sendTimeDifference, countTime, &CounterTimer::countTime, Qt::DirectConnection);
+    connect(dataMonitor, &DataMonitor::requestClearTime, countTime, &CounterTimer::clearTimes, Qt::DirectConnection);
+    connect(countTime, &CounterTimer::sendCurrentAverageTime, dataMonitor, &DataMonitor::showAverageTime, Qt::DirectConnection);
+    connect(this, &MainWindow::finished, timeCounterThread, &QThread::quit);
+    connect(timeCounterThread, &QThread::finished, timeCounterThread, &QThread::deleteLater);
+    connect(this, &MainWindow::finished, countTime, &CounterTimer::deleteLater);
 
-        timeCounterThread->start();
+    timeCounterThread->start();
 }
 
 void MainWindow::showVersionInformation() {
     QMessageBox::information(this, "Historia wersji",
-                                                      "Wersja 0.9.91\n"
+                             "Wersja 0.9.91\n"
                                                       "    - poprawione zliczanie średniego czasu odpowiedzi - całkowite ignorowanie [trend]\n"
                                                       "\n"
                                                       "Wersja 0.9.9\n"
