@@ -29,7 +29,6 @@ private:
 
 private slots:
     void getSequenceToSend(QByteArray data);
-    void getSequenceToSendAsyn(QByteArray data);
     void getLastNumbers(int trNum, int fvNum);
 
     void startTestingThread();
@@ -43,7 +42,6 @@ private slots:
 signals:
     void hideMonitor();
     void sendSequenceToDevice(QByteArray);
-    void sendSequenceToDeviceAsyn(QByteArray);
     void sendMessageBoxInformation(QString);
     void endTest();
     void stopThread();

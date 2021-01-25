@@ -41,7 +41,8 @@ void DataMonitor::getSendedData(QByteArray time, QByteArray data) {
 void DataMonitor::getTimeDiff(qint64 timeDiff) {
     qApp->processEvents();
     if(timeDiff > 50) {
-        ui->textBrowserMonitor->setTextColor("#F9A602");
+        ui->textBrowserMonitor->setTextColor("#875021");
+        ui->textBrowserMonitor->append("####################################################");
         emit increaseTimeout();
     } else
         ui->textBrowserMonitor->setTextColor(Qt::blue);

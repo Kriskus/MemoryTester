@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QThread>
 #include <QApplication>
-#include <QTimer>
 
 #include "devicedatabase.h"
 #include "devicetransaction.h"
@@ -26,7 +25,6 @@ private:
     DeviceTransaction *trDevice;
     DeviceConfiguration *confDevice;
     CounterCrc *countCrc;
-    QTimer *sprnTimer;
 
     int currentLine;
     int repeats;
@@ -47,11 +45,9 @@ private slots:
     void addTrLines();
     void addFvLines();
     void endPrint();
-    void chkPrnStat();
 
 signals:
     void sendSequenceToDevice(QByteArray);
-    void sendSequenceToDeviceAsyn(QByteArray);
     void sendCurrentRepeat(int);
     void sendCurrentNumbers(int, int);
     void finished();

@@ -14,10 +14,6 @@ TesterOperation::TesterOperation(QObject *parent, int rep, bool remember, bool f
     trDevice = new DeviceTransaction();
     confDevice = new DeviceConfiguration();
     countCrc = new CounterCrc();
-    sprnTimer = new QTimer(this);
-    sprnTimer->setInterval(100);
-    connect(sprnTimer, &QTimer::timeout, this, &TesterOperation::chkPrnStat);
-    sprnTimer->start();
 }
 
 void TesterOperation::startoperations() {
@@ -105,8 +101,4 @@ void TesterOperation::endPrint() {
         currentTrType = true;
         currentRepeat++;
     }
-}
-
-void TesterOperation::chkPrnStat() {
-    emit sendSequenceToDeviceAsyn(countCrc->countCrc(confDevice->sprnStatus()));
 }

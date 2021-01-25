@@ -30,14 +30,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::sendStatusBarInformation, this, &MainWindow::showStatusBarInformation);
     connect(this, &MainWindow::sendSequence, this, &MainWindow::deviceReadWrite);
 
-    connect(this, &MainWindow::sendSprnStatus, this, &MainWindow::deviceAsynchReadWrite);
-
     connect(ui->labelVersion, &QLabel::linkActivated, this, &MainWindow::showVersionInformation);
     ui->labelVersion->setText("<a href>Wersja</a>");
     ui->labelConnectionColor->setStyleSheet("QLabel { background: red; border-radius: 8px;}");
     logThread();
     countThread();
-    timer = new QTimer(this);
 }
 
 MainWindow::~MainWindow() {
@@ -69,13 +66,6 @@ void MainWindow::deviceReadWrite(QByteArray data) {
     if(connectionStatus) {
         if(ui->radioButtonCom_1->isChecked()) serialReadWrite(data);
         else socketReadWrite(data);
-    }
-}
-
-void MainWindow::deviceAsynchReadWrite(QByteArray data) {
-    if(connectionStatus) {
-        if(ui->radioButtonCom_1->isChecked()) serialAsynchReadWrite(data);
-        else socketAsynchReadWrite(data);
     }
 }
 
@@ -118,40 +108,23 @@ void MainWindow::serialReadWrite(QByteArray data) {
     serial->write(data);
     timeWrite = QDateTime::currentDateTime();
     response.clear();
-    timer->start(2000);
     while(!response.contains("\03")) {
         response.append(serial->readAll());
         serial->waitForReadyRead(1);
-        if(timer->remainingTime() <= 0)
-            emit sendSprnStatus(countCrc->countCrc(devConf->sprnStatus()));
     }
     timeRead = QDateTime::currentDateTime();
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
     emit sendReadedData(timeRead.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), response);
+    if(timeWrite.msecsTo(timeRead) < 2500)
+        emit sendTimeDifference(timeWrite.msecsTo(timeRead));
+    else
+        emit sendTimeDifference(0);
     if(response.contains("sfsk"))
         emit sendSfskStatus(response);
-    if(response.contains("trend")) {
-        emit sendTimeDifference(0);
+    if(response.contains("trend"))
         emit sendSequence(countCrc->countCrc(devConf->scntStatus()));
-    } else {
-        if(!heatError) emit sendTimeDifference(timeWrite.msecsTo(timeRead));
-        else emit sendTimeDifference(0);
-    }
     if(response.contains("scnt"))
         emit sendScntStatus(response);
-}
-
-void MainWindow::serialAsynchReadWrite(QByteArray data) {
-    serial->write(data);
-    responseaAsyn.clear();
-    if(!heatError) {
-        while(!responseaAsyn.contains("\03")) {
-            responseaAsyn.append(serial->readAll());
-            serial->waitForReadyRead(1);
-        }
-        if(responseaAsyn.contains("\tpr6\t"))
-            heatError = true;
-    }
 }
 
 void MainWindow::socketConnect() {
@@ -180,34 +153,23 @@ void MainWindow::socketReadWrite(QByteArray data) {
     socket->write(data);
     timeWrite = QDateTime::currentDateTime();
     response.clear();
-
     while(!response.contains("\03")) {
         response.append(socket->readAll());
         socket->waitForReadyRead(1);
-
     }
     timeRead = QDateTime::currentDateTime();
     emit sendWritedData(timeWrite.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), data);
     emit sendReadedData(timeRead.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1(), response);
+    if(timeWrite.msecsTo(timeRead) < 2500)
+        emit sendTimeDifference(timeWrite.msecsTo(timeRead));
+    else
+        emit sendTimeDifference(0);
     if(response.contains("sfsk"))
         emit sendSfskStatus(response);
-    if(response.contains("trend")) {
-        emit sendTimeDifference(0);
+    if(response.contains("trend"))
         emit sendSequence(countCrc->countCrc(devConf->scntStatus()));
-    } else {
-        emit sendTimeDifference(timeWrite.msecsTo(timeRead));
-    }
     if(response.contains("scnt"))
         emit sendScntStatus(response);
-}
-
-void MainWindow::socketAsynchReadWrite(QByteArray data) {
-    socket->write(data);
-    responseaAsyn.clear();
-    while(!responseaAsyn.contains("\03")) {
-        responseaAsyn.append(socket->readAll());
-        socket->waitForReadyRead(1);
-    }
 }
 
 void MainWindow::showAvailableDevices() {
@@ -326,41 +288,35 @@ void MainWindow::countThread() {
 
 void MainWindow::showVersionInformation() {
     QMessageBox::information(this, "Historia wersji",
-                             "Wersja 0.9.91\n"
-                                                      "    - poprawione zliczanie średniego czasu odpowiedzi - całkowite ignorowanie [trend]\n"
-                                                      "\n"
+                             "Wersja 0.9.95\n"
+                                                      "    - poprawione zliczanie średniego czasu odpowiedzi - całkowite ignorowanie przegrzania mechanizmu\n\n"
+                                                      "Wersja 0.9.91\n"
+                                                      "    - poprawione zliczanie średniego czasu odpowiedzi - całkowite ignorowanie [trend]\n\n"
                                                       "Wersja 0.9.9\n"
                                                       "    - dodana informacja o średnim czasie odpowiedzi\n"
-                                                      "    - dla zakończenia paragonu i faktur czas odpowiedzi został ustawiony na 1 ms\n"
-                                                      "\n"
+                                                      "    - dla zakończenia paragonu i faktur czas odpowiedzi został ustawiony na 1 ms\n\n"
                                                       "Wersja 0.9.8\n"
-                                                      "    - dodana numeracja bloków\n"
-                                                      "\n"
+                                                      "    - dodana numeracja bloków\n\n"
                                                       "Wersja 0.9.8\n"
                                                       "    - dodany odczyt statusu scnt\n"
-                                                      "    - dodana informacja o różnicy w czasie w pliku log\n"
-                                                      "\n"
+                                                      "    - dodana informacja o różnicy w czasie w pliku log\n\n"
                                                       "Wersja 0.9.7\n"
                                                       "    - dodany raport dobowy\n"
                                                       "    - dodane programowanie stawek VAT\n"
                                                       "    - dodane programowanie nagłówka\n"
                                                       "    - dodane drukowanie raportu dobowego po zakończeniu testu\n"
                                                       "    - usunięty timeout przy odczytywaniu odpowiedzi z drukarki\n"
-                                                      "              (przy błędzie może odczytywać w nieskończoność\n"
-                                                      "\n"
+                                                      "              (przy błędzie może odczytywać w nieskończoność\n\n"
                                                       "Wersja 0.9.6\n"
-                                                      "    - poprawione rozpoczęcie faktury dla EJ\n"
-                                                      "\n"
+                                                      "    - poprawione rozpoczęcie faktury dla EJ\n\n"
                                                       "Wersja 0.9.5\n"
                                                       "    - poprawiono wyświetlanie połączenie po TCP\n"
                                                       "    - zwiękoszono maksymalną liczbę początkową faktur i paragonów\n"
-                                                      "    - dodano sprawdzanie czy istnieje katalog z logami i ewentualne utworzenie go\n"
-                                                      "\n"
+                                                      "    - dodano sprawdzanie czy istnieje katalog z logami i ewentualne utworzenie go\n\n"
                                                       "Wersja 0.9.4\n"
                                                       "    - dodano rozróżnienie faktur Online/EJ\n"
                                                       "    - dodano możliwość ustawienia początkowych numerów w nazwach pozycji\n"
-                                                      "    - dodano możliwość zapamiętania ostatnich numerów po zakończonym teście\n"
-                                                      "\n"
+                                                      "    - dodano możliwość zapamiętania ostatnich numerów po zakończonym teście\n\n"
                                                       "Wersja 0.9.2\n"
                                                       "    - wersja początkowa\n\n", QMessageBox::Ok);
 }

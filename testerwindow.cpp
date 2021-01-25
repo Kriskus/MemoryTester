@@ -26,10 +26,6 @@ void TesterWindow::getSequenceToSend(QByteArray data) {
     emit sendSequenceToDevice(data);
 }
 
-void TesterWindow::getSequenceToSendAsyn(QByteArray data) {
-    emit sendSequenceToDeviceAsyn(data);
-}
-
 void TesterWindow::getLastNumbers(int trNum, int fvNum) {
     ui->spinBoxTr->setValue(trNum);
     ui->spinBoxFv->setValue(fvNum);
@@ -50,7 +46,6 @@ void TesterWindow::startTestingThread() {
 
             connect(testingThread, &QThread::started, testOper, &TesterOperation::startoperations);
             connect(testOper, &TesterOperation::sendSequenceToDevice, this, &TesterWindow::getSequenceToSend, Qt::DirectConnection);
-            connect(testOper, &TesterOperation::sendSequenceToDeviceAsyn, this, &TesterWindow::getSequenceToSendAsyn, Qt::DirectConnection);
             connect(testOper, &TesterOperation::sendCurrentRepeat, this, &TesterWindow::showCurrentRepeat, Qt::DirectConnection);
             connect(this, &TesterWindow::stopThread, testOper, &TesterOperation::stopOperation, Qt::DirectConnection);
             connect(testOper, &TesterOperation::sendCurrentNumbers, this, &TesterWindow::getLastNumbers);
